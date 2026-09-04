@@ -1,0 +1,11 @@
+{
+  "name": "ヤマノテループ — 山手線で時間をつぶす",
+  "short_name": "ヤマノテループ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f4ed",
+  "theme_color": "#84bd00",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

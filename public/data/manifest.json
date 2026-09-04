@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "provisional": true,
+  "revision": "2026-09-provisional",
+  "generatedAt": "2026-09-04T14:54:22Z",
+  "files": {
+    "weekday": {
+      "inner": "data/2026-09/weekday-inner.json",
+      "outer": "data/2026-09/weekday-outer.json"
+    },
+    "holiday": {
+      "inner": "data/2026-09/holiday-inner.json",
+      "outer": "data/2026-09/holiday-outer.json"
+    }
+  }
+}

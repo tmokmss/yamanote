@@ -1,0 +1,59 @@
+name: Refresh timetable
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: timetable-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check configuration
+        id: config
+        env:
+          ODPT_API_TOKEN: ${{ secrets.ODPT_API_TOKEN }}
+          ODPT_CONTACT_EMAIL: ${{ vars.ODPT_CONTACT_EMAIL }}
+        run: |
+          if [ -n "$ODPT_API_TOKEN" ] && [ -n "$ODPT_CONTACT_EMAIL" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "ODPT_API_TOKEN secret and ODPT_CONTACT_EMAIL variable are required; leaving provisional data untouched."
+          fi
+
+      - name: Fetch and normalize timetable
+        if: steps.config.outputs.ready == 'true'
+        env:
+          ODPT_API_TOKEN: ${{ secrets.ODPT_API_TOKEN }}
+          ODPT_CONTACT_EMAIL: ${{ vars.ODPT_CONTACT_EMAIL }}
+        run: npm run refresh:odpt
+
+      - name: Commit updated data
+        if: steps.config.outputs.ready == 'true'
+        run: |
+          if git diff --quiet -- public/data; then
+            echo "Timetable is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data
+          git commit -m "chore: refresh timetable data"
+          git push
