@@ -491,7 +491,7 @@ export default function App() {
                 <ul>
                   <li>「座りっぱなし」は同じ車両で移動できる意味です。着席を保証するものではありません。</li>
                   <li>遅延・運休・臨時ダイヤは反映されません。駅の案内を優先してください。</li>
-                  <li>同じ駅に戻る乗り方や一周以上の乗り方は通常運賃では認められていないため、<a href="https://www.jreast.co.jp/tickets/info.aspx?GoodsCd=2485" target="_blank" rel="noreferrer">都区内パス</a>などのフリーきっぷを買ってから乗ってください。途中下車はできません。</li>
+                  <li>同じ駅に戻る乗り方や一周以上の乗り方は通常運賃では認められていないため、<a href="https://www.jreast.co.jp/tickets/info.aspx?GoodsCd=2485" target="_blank" rel="noreferrer">都区内パス</a>などのフリーきっぷを買ってから乗ってください。</li>
                   <li>ヤマノテループは非公式の乗車プラン提案ツールです。運賃規則の適用は各鉄道事業者の案内に従ってください。駅座標: <a href="https://www.heartrails-express.com/" target="_blank" rel="noreferrer">HeartRails Express</a></li>
                 </ul>
               </details>
