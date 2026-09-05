@@ -18,7 +18,7 @@
 Rails一式はユーザーの許可を得て削除済み。現在は以下の静的アプリ。
 
 - React 19 + TypeScript + Vite
-- `src/App.tsx`: 検索フォーム・検索結果UI
+- `src/App.tsx`: 検索画面と結果画面（横スワイプのデッキ）、画面遷移と履歴
 - `src/lib/router.ts`: 車両継続を含む経路探索と3種類の推薦
 - `src/lib/data.ts`: manifestを読み、検索日に必要な平日／土休日の内外2ファイルだけ取得
 - `src/lib/time.ts`: 祝日、深夜0〜2時台の前営業日扱い
@@ -119,14 +119,14 @@ Rails一式はユーザーの許可を得て削除済み。現在は以下の静
 - 以前の縦タイムラインB: `exec-982311dc-6b64-4499-919a-be389c3e96c2.png`
 - 以前の比較カードC: `exec-0a6fea15-b971-41af-8fbd-493e0f637da6.png`
 
-## SVG路線図の実装状況（完了、未push）
+## SVG路線図の実装状況（完了、PR #1）
 
 前セッションから引き継ぎ、実装とビルドエラー修正、幾何の検証まで完了した。
 
 - branch: `worktree-route-map-svg`
 - worktree: `.claude/worktrees/route-map-svg`
-- commit済み・**push はしていない**（本ファイルの方針どおりユーザー確認待ち）
-- master の作業ツリーには引き継ぎ前の古い未commit版が残っているので、取り込む場合は上書きすること
+- ユーザー確認済み。push して PR #1 を作成（https://github.com/tmokmss/yamanote/pull/1）。master へのmergeはユーザーが行う
+- master の作業ツリーには引き継ぎ前の古い未commit版が残っているので、`git pull` 前に捨てること
 
 ### ファイル
 
@@ -179,9 +179,8 @@ Rails一式はユーザーの許可を得て削除済み。現在は以下の静
 
 ## 残っている確認事項
 
-1. ユーザーによる見た目の最終確認
-2. 確認後に push（現状 branch にcommit済み、未push）
-3. モバイル実機でのラベル可読性。SVGはカード幅に追随するため、幅360pxの端末では
+1. PR #1 を master へ merge（ユーザー作業）
+2. モバイル実機でのラベル可読性。SVGはカード幅に追随するため、幅360pxの端末では
    フォント15pxが実効8〜9px相当になる
 4. 乗換バッジが軌跡の上に重なることがある（実害は小さい）
 
@@ -190,6 +189,54 @@ Rails一式はユーザーの許可を得て削除済み。現在は以下の静
 - 暫定時刻表4ファイルの検証成功
 - `npm run test` 21件成功（既存12件 + route-map 9件）
 - `npm run build` 成功
+
+## モバイル向け1画面UI（branch: `mobile-swipe-ui`、PR #2、route-map の上に積んだ）
+
+ユーザー要望: PWA的に、スクロールをあまり発生させず1画面で遷移し、乗り方の候補は横スワイプで切り替える。
+
+### 構造
+
+- `App.tsx` は `view: 'search' | 'results'` を持ち、`.stage__track`（幅200%）を `translateX` で滑らせて2画面を遷移する
+- `body { overflow: hidden }`、`#root { height: 100dvh }`。ページ自体はスクロールせず、各画面の `.screen__body` や `.deck__cell` の中だけがスクロールする
+- 隠れている画面には `inert` と `aria-hidden` を付けてフォーカスを遮る
+- 結果画面は `history.pushState({ view: 'results' })` で履歴に積み、ブラウザの「戻る」と「‹ 条件を変える」の両方で検索画面へ戻る
+- URLに `from` と `minutes` があれば起動時に自動検索して結果画面から始める（共有URL向け）。この場合は履歴に積まず `replaceState`
+
+### 候補のデッキ（`RouteDeck`）
+
+- `.deck` は横スクロール + `scroll-snap-type: x mandatory`、各 `.deck__cell` は `flex: 0 0 100%` + `scroll-snap-stop: always`。ライブラリなし
+- 上部のタブ（`role="tablist"`）が現在位置を示し、タップで `scrollTo`。矢印キー・Home/Endにも対応
+- 表示中のカードは `scroll` イベントから `scrollLeft / clientWidth` で算出
+- `IntersectionObserver`（threshold 0.35）で画面に入ったカードに `is-revealed` を付け、それまで `.route-map__trace` のアニメーションを `animation-play-state: paused` で止めておく。スワイプで見えた瞬間に路線図が描かれる
+- 新しい結果が来たら先頭カードへ戻し、`revealed` をリセット
+- 「横にスワイプで他の乗り方」のヒントは2枚目が見えたら消える
+
+### 検索画面の圧縮
+
+- ヒーローを38pxのロゴ + タイトルのトップバーに
+- 「試験運転中」は右上のピル。520px以下では日付部分を隠す
+- 時間プリセットは1行5個（30分／1時間／1.5時間／2時間／3時間、`presetLabel()`）
+- 注意書きとクレジットは `<details class="about">` に折りたたみ
+- 390×760 で「別の駅で降りる」をオンにしても1画面に収まることを確認済み
+
+### PWA
+
+- `site.webmanifest` は元から `display: standalone`
+- `index.html` に `apple-mobile-web-app-capable` 等のメタを追加
+- Service Worker は入れていない（時刻表が古いまま残るリスクと、GitHub Pagesのパス構成を考慮。必要なら次の課題）
+
+### 確認方法
+
+- `npm run check` 通過（テスト21件、ビルド）
+- ヘッドレスChromeは `open -n -W -a "Google Chrome" --args --headless=new --screenshot=... URL` で起動できる（バイナリを直接呼ぶとフレームワーク解決に失敗する）
+- ただし窓幅が約500pxに切り上げられるため、390px幅の確認は同一オリジンで配信した `<iframe width=390>` に嵌めて撮る。`file://` からのiframeはクロスオリジンで待機が効かず「計算中」のまま撮れる
+- 390×760 で検索画面・結果画面（東京120分、渋谷→品川30分）を目視確認済み
+
+### 残課題
+
+- 乗車手順（legs）はカード内スクロールが必要（路線図までは1画面）
+- 実機のiOS Safariでの `100dvh`・スナップ・safe-area の挙動確認
+- PR #1（route-map）がmergeされたらPR #2のbaseは自動でmasterに切り替わる
 
 ## 補足
 
