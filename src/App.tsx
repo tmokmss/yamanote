@@ -489,17 +489,10 @@ export default function App() {
               <details className="about">
                 <summary>乗る前の注意とデータについて</summary>
                 <ul>
-                  <li>
-                    <strong>乗る前にフリーきっぷを買ってください。</strong>
-                    同じ駅に戻る乗り方や、山手線を一周以上する乗り方は、通常運賃（Suicaを含む）では認められていません。
-                    <a href="https://www.jreast.co.jp/tickets/info.aspx?GoodsCd=2485" target="_blank" rel="noreferrer">都区内パス</a>
-                    （大人870円・こども430円）などのフリーきっぷなら、一周も同じ駅への帰着も問題ありません。駅の券売機やモバイルSuicaで買えます。
-                  </li>
-                  <li>通常運賃で乗れるのは、別の駅で降りる一周未満の乗り方だけです。同じ区間を2度通る折り返しも重複扱いになります。</li>
-                  <li>途中下車（改札を出ること）はできません。きっぷは当日限り有効です。</li>
                   <li>「座りっぱなし」は同じ車両で移動できる意味です。着席を保証するものではありません。</li>
                   <li>遅延・運休・臨時ダイヤは反映されません。駅の案内を優先してください。</li>
-                  <li>本サイトの情報は参考情報です。運賃規則の適用は各鉄道事業者の案内に従ってください。ヤマノテループは非公式の乗車プラン提案ツールです。駅座標: <a href="https://www.heartrails-express.com/" target="_blank" rel="noreferrer">HeartRails Express</a></li>
+                  <li>同じ駅に戻る乗り方や一周以上の乗り方は通常運賃では認められていないため、<a href="https://www.jreast.co.jp/tickets/info.aspx?GoodsCd=2485" target="_blank" rel="noreferrer">都区内パス</a>などのフリーきっぷを買ってから乗ってください。途中下車はできません。</li>
+                  <li>ヤマノテループは非公式の乗車プラン提案ツールです。運賃規則の適用は各鉄道事業者の案内に従ってください。駅座標: <a href="https://www.heartrails-express.com/" target="_blank" rel="noreferrer">HeartRails Express</a></li>
                 </ul>
               </details>
             </div>
