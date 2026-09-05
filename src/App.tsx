@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import RouteMap from './components/RouteMap'
 import { isStationId, stationById, stations } from './data/stations'
 import { loadManifest, loadTimetables } from './lib/data'
 import { formatDistance, nearestYamanoteStation } from './lib/location'
@@ -101,6 +102,8 @@ function RouteCard({ recommendation }: { recommendation: RouteRecommendation }) 
           <dd>{route.initialWait === 0 ? 'すぐ' : `${route.initialWait}分`}</dd>
         </div>
       </dl>
+
+      <RouteMap route={route} />
 
       <ol className="legs" aria-label="乗車手順">
         {route.legs.map((leg, index) => {
